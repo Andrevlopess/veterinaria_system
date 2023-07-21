@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Costumers {
+  id           String @id @default(uuid())
+  name         String
+  surname      String
+  email        String @unique
+  phone_number String
+  Adress       String
+  State        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  animals Animal[]
+}
+
+model Animal {
+  id         String   @id @default(uuid())
+  name       String
+  id_species String
+  id_breed   String
+  age        Int
+  gender     String
+  weight     Float
+  bithdate   DateTime
+  neutered   Boolean
+  vaccinated Boolean
+  ownerId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner Costumers @relation(fields: [ownerId], references: [id])
+}
+
+model Employees {
+  id           String @id @default(uuid())
+  name         String
+  surname      String
+  email        String @unique
+  phone_number String
+  Adress       String
+  State        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
