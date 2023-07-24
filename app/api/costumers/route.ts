@@ -9,13 +9,14 @@ export async function POST(req: Request) {
       surname: z.string().min(2).max(40),
       phone: z.string().min(2).max(15),
       email: z.string().email({ message: "Invalid email address" }),
+      cpf: z.string().min(11).max(11),
       address: z.string().min(2).max(60),
-      state: z.string().max(2, {message: "Invalid state"}),
+      state: z.string().max(2, { message: "Invalid state" }),
+      cep: z.number(),
     });
 
-    const { name, surname, phone, email, address, state } = costumerBody.parse(
-      await req.json()
-    );
+    const { name, surname, phone, email, cpf, address, state, cep } =
+      costumerBody.parse(await req.json());
 
     const costumer = await prisma.costumers.findUnique({ where: { email } });
 
@@ -34,9 +35,11 @@ export async function POST(req: Request) {
         name,
         surname,
         email,
+        cpf,
         phone: phone,
         address: address,
         state: state,
+        cep,
       },
     });
 
@@ -52,5 +55,21 @@ export async function POST(req: Request) {
       }),
       { status: 500 }
     );
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+
+    const costumers = await prisma.costumers.findMany();
+
+
+    return NextResponse.json({
+      message: "Sucess",
+      costumers: costumers
+    });
+
+  } catch (error) {
+    return NextResponse.json(error);
   }
 }

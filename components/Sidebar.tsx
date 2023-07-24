@@ -4,22 +4,32 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
-import { AiOutlineDashboard, AiFillDashboard } from 'react-icons/ai'
+import { AiOutlineDashboard, AiFillDashboard, AiOutlineUser } from 'react-icons/ai'
 import { HiOutlineUsers, HiUsers, HiOutlineCalendar } from 'react-icons/hi'
 import { PiDog, PiDogFill } from 'react-icons/pi'
-import {IoMdCalendar} from 'react-icons/io'
+import { IoMdCalendar } from 'react-icons/io'
+import {BsPersonPlus} from 'react-icons/bs'
 import Logo from '../public/Logo.svg'
 import clsx from 'clsx'
+import LinkMenu from './LinkMenu'
 
 type Props = {}
 
-interface ILinks {
+export interface ILinks {
     id: number;
     activeIcon: React.ReactNode;
     defaultIcon: React.ReactNode;
     pathname: string;
     displayName: string;
+    sublinks?: ISublinks[]
+}
 
+interface ISublinks {
+    id: number;
+    activeIcon: React.ReactNode;
+    defaultIcon: React.ReactNode;
+    pathname: string;
+    displayName: string;
 }
 
 const Sidebar = (props: Props) => {
@@ -33,10 +43,26 @@ const Sidebar = (props: Props) => {
     },
     {
         id: 2,
-        defaultIcon: <HiOutlineUsers size={24} className="text-zinc-600" />,
-        activeIcon: <HiUsers size={24} className="text-blue-600" />,
+        defaultIcon: <AiOutlineUser size={24} className="text-zinc-600" />,
+        activeIcon: <AiOutlineUser size={24} className="text-blue-600" />,
         displayName: 'Costumers',
-        pathname: '/costumers'
+        pathname: '/costumers',
+        sublinks: [
+            {
+                id: 1,
+                defaultIcon: <HiOutlineUsers size={24} className="text-zinc-600" />,
+                activeIcon: <HiUsers size={24} className="text-blue-600" />,
+                displayName: 'All costumers',
+                pathname: '/costumers',
+            },
+            {
+                id: 2,
+                defaultIcon: <BsPersonPlus size={24} className="text-zinc-600" />,
+                activeIcon: <BsPersonPlus size={24} className="text-blue-600" />,
+                displayName: 'Add costumer',
+                pathname: '/costumers/newcostumer',
+            },
+        ]
     },
     {
         id: 3,
@@ -52,8 +78,6 @@ const Sidebar = (props: Props) => {
         displayName: 'Calendar',
         pathname: '/calendar'
     },]
-
-    const pathname = usePathname();
 
     return (
         <aside className='min-h-screen fixed inset-y-0 left-0 min-w-[250px] flex border-r border-zinc-200 flex-col p-4 gap-6'>
@@ -72,44 +96,11 @@ const Sidebar = (props: Props) => {
                             links.map(link => {
                                 return (
                                     <li key={link.id}>
-                                        <Link
-                                            href={link.pathname}
-                                            className={clsx('flex items-center rounded-r-lg p-2 gap-4 hover:border-blue-500 transition bg-zinc-100 border-2', {
-                                                'border-l-blue-500 border-2': pathname === link.pathname,
-                                                'bg-zinc-100': pathname !== link.pathname,
-                                            })}>
-                                            {pathname === link.pathname ?
-                                                link.activeIcon
-                                                :
-                                                link.defaultIcon
-                                            }
-                                            {link.displayName}
-                                        </Link>
+                                      <LinkMenu link={link}/>  
                                     </li>
                                 )
                             })
                         }
-                    </ul>
-                </li>
-
-                <li>
-                    <ul className='flex flex-col gap-2'>
-                        <h5 className='uppercase font-bold text-xs text-zinc-600 ml-1'>Our team</h5>
-                        <li>
-                            <Link href="/dashboard" className='flex items-center border rounded-md p-2 gap-4'>
-                                <AiOutlineDashboard size={25} className="text-zinc-700" />
-                                {pathname}
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/dashboard" className='flex items-center border rounded-md p-2 gap-4'>
-                                <AiOutlineDashboard size={25} className="text-zinc-700" />
-                                Dashboard
-                            </Link>
-                        </li>
-
-                       
                     </ul>
                 </li>
             </ul>
