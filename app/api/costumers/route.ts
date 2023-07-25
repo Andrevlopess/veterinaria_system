@@ -63,7 +63,6 @@ export async function GET(req: Request) {
 
     const costumers = await prisma.costumers.findMany();
 
-
     return NextResponse.json({
       message: "Sucess",
       costumers: costumers

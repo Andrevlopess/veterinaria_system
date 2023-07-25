@@ -6,7 +6,7 @@ import { Epilogue } from 'next/font/google'
 const epilogue = Epilogue({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Vet',
+  title: 'Veterinary',
   description: 'veterinary system',
 }
 
