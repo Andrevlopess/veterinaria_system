@@ -20,9 +20,6 @@ const NewCostumer = (props: Props) => {
 
     const handleSubmit = async (values: ICostumer) => {
 
-        console.log(values);
-        
-
         const res = await fetch('http://localhost:3000/api/costumers', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
