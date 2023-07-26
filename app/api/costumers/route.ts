@@ -5,11 +5,11 @@ import { z } from "zod";
 export async function POST(req: Request) {
   try {
     const costumerBody = z.object({
-      name: z.string().min(2).max(25),
-      surname: z.string().min(2).max(40),
+      name: z.string().min(2).max(35),
+      surname: z.string().min(2).max(60),
       phone: z.string().min(2).max(15),
       email: z.string().email({ message: "Invalid email address" }),
-      cpf: z.string().min(11).max(11),
+      cpf: z.string().min(11).max(11, {message: "Please enter a valid cpf"}),
       address: z.string().min(2).max(60),
       state: z.string().max(2, { message: "Invalid state" }),
       cep: z.number(),
@@ -18,13 +18,24 @@ export async function POST(req: Request) {
     const { name, surname, phone, email, cpf, address, state, cep } =
       costumerBody.parse(await req.json());
 
-    const costumer = await prisma.costumers.findUnique({ where: { email } });
-
-    if (costumer) {
+    const costumerEmail = await prisma.costumers.findUnique({ where: { email } });
+    const costumerCPF = await prisma.costumers.findUnique({ where: { cpf } });
+    
+    if (costumerEmail) {
       return NextResponse.json(
         {
           status: "Error",
           message: "This email has already been used!",
+        },
+        { status: 500 }
+      );
+    }
+
+    if (costumerCPF) {
+      return NextResponse.json(
+        {
+          status: "Error",
+          message: "This CPF has already been used!",
         },
         { status: 500 }
       );
@@ -36,9 +47,9 @@ export async function POST(req: Request) {
         surname,
         email,
         cpf,
-        phone: phone,
-        address: address,
-        state: state,
+        phone,
+        address,
+        state,
         cep,
       },
     });
@@ -47,11 +58,12 @@ export async function POST(req: Request) {
       status: "sucess",
       newCostumer,
     });
+
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify({
         status: "error",
-        message: error.message,
+        message: error,
       }),
       { status: 500 }
     );

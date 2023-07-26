@@ -1,10 +1,11 @@
 'use client';
 
 import ConfirmDialog from '@/components/ConfirmDialog';
-import Modal from '@/components/ConfirmDialog';
+import {Toaster, toast} from 'react-hot-toast'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { AiOutlinePlus, AiOutlineSearch, AiOutlineLoading3Quarters, AiOutlineEdit } from 'react-icons/ai'
+import { BiTrashAlt } from 'react-icons/bi'
 
 
 type Props = {}
@@ -29,7 +30,9 @@ const Costumers = (props: Props) => {
     const [costumers, setCostumers] = useState<ICostumer[]>([])
     const [searchedCostumers, setSearchedCostumers] = useState<ICostumer[]>([])
     const [searchText, setSearchText] = useState<string>('')
-    const [error, setError] = useState()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+
 
     const getCostumers = async () => {
         try {
@@ -57,8 +60,7 @@ const Costumers = (props: Props) => {
         const regex = new RegExp(value, "i")
         return costumers.filter(
             (costumer) =>
-                regex.test(costumer.name) ||
-                regex.test(costumer.surname) ||
+                regex.test(costumer.name + costumer.surname) ||
                 regex.test(costumer.address) ||
                 regex.test(costumer.state) ||
                 regex.test(costumer.cpf) ||
@@ -66,13 +68,6 @@ const Costumers = (props: Props) => {
         );
     }
 
-    useEffect(() => {
-
-        setTimeout(() => {
-            setSearchedCostumers(handleSearch(searchText))
-        }, 700);
-
-    }, [searchText])
 
     const formatCreatedAt = (createdAt: Date) => {
         const data = new Date(createdAt);
@@ -85,9 +80,47 @@ const Costumers = (props: Props) => {
         return `${dia}/${mes}/${ano}`;
     }
 
+    const handleDeleteCostumer = async (costumer_id: string) => {
+        setIsLoading(true)
+
+        try {
+
+            const res = await fetch(`http://localhost:3000/api/costumers/${costumer_id}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            })
+
+            if (res.ok) {
+                setIsLoading(false)
+                getCostumers();
+                toast.success("Costumer deleted successfully")
+            }
+
+        } catch (error) {
+            alert(error)
+        } finally {
+            setIsLoading(false)
+            handleCloseModal(isDialogOpen)
+        }
+
+    }
+
+    useEffect(() => {
+
+        setTimeout(() => {
+            setSearchedCostumers(handleSearch(searchText))
+        }, 500);
+
+    }, [searchText, handleDeleteCostumer])
+
+
+    const handleCloseModal = (isOpen: boolean) => {
+        setIsDialogOpen(!isOpen)
+    }
 
     return (
         <div className='p-4 w-full '>
+            <Toaster />
             <h2 className='text-2xl font-semibold '>Costumers</h2>
             <div className='flex flex-col w-full mt-10 gap-2'>
                 <div className='flex justify-between w-full items-center p-2 rounded-full border'>
@@ -121,7 +154,7 @@ const Costumers = (props: Props) => {
                 </div>
                 <div className="relative overflow-x-auto">
                     <table className="w-full text-sm text-left text-gray-800">
-                        <thead className="text-xs text-gray-700 uppercase bg-blue-200 ">
+                        <thead className="text-xs text-zinc-50 uppercase bg-blue-500 ">
                             <tr className='rounded-lg'>
                                 <th scope="col" className="px-6 py-3 rounded-tl-lg">
                                     Costumer
@@ -141,7 +174,7 @@ const Costumers = (props: Props) => {
                                 <th scope="col" className="px-6 py-3">
                                     Created at
                                 </th>
-                                <th scope="col" className="px-6 py-3 bg-blue-300 text-center rounded-tr-lg">
+                                <th scope="col" className="px-6 py-3 bg-blue-600 text-center rounded-tr-lg">
                                     Actions
                                 </th>
                             </tr>
@@ -177,8 +210,21 @@ const Costumers = (props: Props) => {
                                                                 {formatCreatedAt(searchedCostumer.createdAt)}
                                                             </td>
                                                             <td className="px-6 py-4 text-center">
-                                                                <button className='p-3 rounded-full bg-zinc-200'>
-                                                                    <AiOutlineEdit size={20} />
+                                                                <ConfirmDialog
+                                                                    onConfirm={() => {
+                                                                        handleDeleteCostumer(searchedCostumer.id)
+                                                                    }}
+                                                                    isLoading={isLoading}
+                                                                    isOpen={isDialogOpen}
+                                                                    onClose={handleCloseModal}
+                                                                />
+
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setIsDialogOpen(true)}
+                                                                    className="p-2 border border-red-100 rounded-full"
+                                                                >
+                                                                    <BiTrashAlt size={20} className="text-red-500" />
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -189,7 +235,7 @@ const Costumers = (props: Props) => {
                                     ) : (
                                         <tbody>
                                             <tr>
-                                                <td colSpan={6} className='border text-center py-48'>
+                                                <td colSpan={7} className='border text-center py-48'>
                                                     Sorry, no results found for your search.
                                                 </td>
                                             </tr>
@@ -222,8 +268,22 @@ const Costumers = (props: Props) => {
                                                         {formatCreatedAt(costumer.createdAt)}
                                                     </td>
                                                     <td className="px-6 py-4 text-center space-x-2">
-                                                        <ConfirmDialog costumer_id={costumer.id} />
-                                                        <ConfirmDialog costumer_id={costumer.id} />
+                                                        <ConfirmDialog
+                                                            onConfirm={() => {
+                                                                handleDeleteCostumer(costumer.id)
+                                                            }}
+                                                            isLoading={isLoading}
+                                                            isOpen={isDialogOpen}
+                                                            onClose={handleCloseModal}
+                                                        />
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setIsDialogOpen(true)}
+                                                            className="p-2 border border-red-100 rounded-full"
+                                                        >
+                                                            <BiTrashAlt size={20} className="text-red-500" />
+                                                        </button>
                                                     </td>
 
                                                 </tr>
@@ -234,7 +294,7 @@ const Costumers = (props: Props) => {
                             ) : (
                                 <tbody>
                                     <tr>
-                                        <td colSpan={6} className='border text-center py-48'>
+                                        <td colSpan={7} className='border bg-zinc-100 text-center py-48'>
                                             <AiOutlineLoading3Quarters className="animate-spin mx-auto text-blue-700" size={50} />
                                         </td>
                                     </tr>

@@ -2,6 +2,8 @@
 
 import React from 'react'
 import { Formik } from 'formik'
+import { Toaster, toast } from 'react-hot-toast';
+import { useMutation } from '@tanstack/react-query';
 
 type Props = {}
 
@@ -18,22 +20,19 @@ interface ICostumer {
 
 const NewCostumer = (props: Props) => {
 
-    const handleSubmit = async (values: ICostumer) => {
-
-        const res = await fetch('http://localhost:3000/api/costumers', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(values)
-        })
-
-        if(res.ok){
-            alert("New costumer successfully saved!")
+    const CostumerMutation = useMutation({
+        mutationFn: async (values) => {
+             await fetch('http://localhost:3000/api/costumers',{
+                method: 'POST',
+                headers:  {'Content-Type': 'application/json'},
+                body: JSON.stringify(values)
+             })
         }
-        
-    }
+    })
 
     return (
         <div className='p-4 w-full '>
+            <Toaster />
             <h2 className='text-2xl font-semibold '>Add costumer</h2>
             <p className='text-lg text-zinc-700'>Create and save a new costumer for the veterinary.</p>
             <Formik
@@ -47,8 +46,8 @@ const NewCostumer = (props: Props) => {
                     state: "uk",
                     cep: 0,
                 }}
-                onSubmit={(values, actions) => {
-                    handleSubmit(values);
+                onSubmit={(values, actions) => {               
+                    // CostumerMutation.mutate(values);
                     actions.setSubmitting(false);
                 }}>
 
@@ -109,6 +108,7 @@ const NewCostumer = (props: Props) => {
                                 </label>
                                 <input
                                     name="cpf"
+                                    maxLength={11}
                                     onChange={props.handleChange}
                                     onBlur={props.handleBlur}
                                     value={props.values.cpf}
