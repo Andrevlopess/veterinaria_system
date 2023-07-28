@@ -152,9 +152,9 @@ const Costumers = (props: Props) => {
                     </Link>
 
                 </div>
-                <div className="relative overflow-x-auto">
+                <div className="relative overflow-x-auto h-[75vh] overflow-y-scroll">
                     <table className="w-full text-sm text-left text-gray-800">
-                        <thead className="text-xs text-zinc-50 uppercase bg-blue-500 ">
+                        <thead className="text-xs text-zinc-50 uppercase bg-blue-500 sticky top-0">
                             <tr className='rounded-lg'>
                                 <th scope="col" className="px-6 py-3 rounded-tl-lg">
                                     Costumer
@@ -183,13 +183,13 @@ const Costumers = (props: Props) => {
                             costumers.length ? (
                                 searchText ? (
                                     searchedCostumers.length ? (
-                                        <tbody >
+                                        <tbody className='h-[500px] overflow-y-scroll'>
                                             {
                                                 searchedCostumers.map(searchedCostumer => {
                                                     return (
                                                         <tr
                                                             key={searchedCostumer.id}
-                                                            className="bg-white border-b dark:bg-zinc-100 border-zinc-400">
+                                                            className="bg-white border-b dark:bg-zinc-100 border-zinc-400 hover:bg-blue-100">
                                                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex flex-col">
                                                                 <span>{searchedCostumer.name} {searchedCostumer.surname}</span>
                                                                 <span className='text-xs text-gray-700'>{searchedCostumer.email}</span>
@@ -247,7 +247,7 @@ const Costumers = (props: Props) => {
                                             return (
                                                 <tr
                                                     key={costumer.id}
-                                                    className="bg-white border-b dark:bg-zinc-100 border-zinc-400">
+                                                    className="bg-white border-b dark:bg-zinc-100 border-zinc-400 hover:bg-blue-100">
                                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex flex-col">
                                                         <span>{costumer.name} {costumer.surname}</span>
                                                         <span className='text-xs text-gray-700'>{costumer.email}</span>

@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           status: "Error",
+          target: "email",
           message: "This email has already been used!",
         },
         { status: 500 }
@@ -35,6 +36,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           status: "Error",
+          target: "cpf",
           message: "This CPF has already been used!",
         },
         { status: 500 }
@@ -60,6 +62,7 @@ export async function POST(req: Request) {
     });
 
   } catch (error: any) {
+
     return new NextResponse(
       JSON.stringify({
         status: "error",

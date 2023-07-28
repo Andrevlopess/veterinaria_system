@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import { Toaster, toast } from 'react-hot-toast';
 import { useMutation } from '@tanstack/react-query';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 
 type Props = {}
 
@@ -17,18 +18,43 @@ interface ICostumer {
     state: string,
     cep: number;
 }
+interface IError {
+    status: string,
+    target: string,
+    message: string
+}
 
 const NewCostumer = (props: Props) => {
 
-    const CostumerMutation = useMutation({
-        mutationFn: async (values) => {
-             await fetch('http://localhost:3000/api/costumers',{
+    const [isError, setIsError] = useState<IError | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handlePostCostumer = async (values: ICostumer) => {
+        setIsError(null)
+        try {
+            setIsLoading(true)
+            const res = await fetch('http://localhost:3000/api/costumers', {
                 method: 'POST',
-                headers:  {'Content-Type': 'application/json'},
+                headers: { 'content-type': 'application/json' },
                 body: JSON.stringify(values)
-             })
+            })
+
+            const result = await res.json()
+
+            if (!res.ok) {
+                setIsError(result)
+                return;
+            }
+
+            return toast.success("Costumer created successfully!")
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false)
         }
-    })
+    }
+
 
     return (
         <div className='p-4 w-full '>
@@ -46,9 +72,8 @@ const NewCostumer = (props: Props) => {
                     state: "uk",
                     cep: 0,
                 }}
-                onSubmit={(values, actions) => {               
-                    // CostumerMutation.mutate(values);
-                    actions.setSubmitting(false);
+                onSubmit={(values, actions) => {
+                    handlePostCostumer(values)
                 }}>
 
                 {props => (
@@ -56,7 +81,7 @@ const NewCostumer = (props: Props) => {
                         onSubmit={props.handleSubmit}
                         className='flex flex-col max-w-3xl mt-6'>
                         <h3 className='text-md font-bold uppercase text-zinc-800 translate-x-4 translate-y-3 bg-white w-fit px-2'>Contact</h3>
-                        <div className='grid grid-cols-2 border border-zinc-400 rounded-lg px-2 py-4 gap-2 focus-within:border-blue-500'>
+                        <div className='grid grid-cols-2 border border-zinc-400 rounded-lg px-2 py-4 gap-2 gap-y-4 focus-within:border-blue-500'>
                             <div className='flex flex-col gap-2 group'>
                                 <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
                                     Name
@@ -113,9 +138,15 @@ const NewCostumer = (props: Props) => {
                                     onBlur={props.handleBlur}
                                     value={props.values.cpf}
                                     type="text"
+                                    data-error={isError?.target === "cpf"}
                                     id="cpfInput"
-                                    className='outline-none p-2 border border-zinc-400 rounded-lg  focus:border-blue-500'
+                                    className='outline-none p-2 border border-zinc-400 rounded-lg  focus:border-blue-500 data-[error=true]:border-red-500'
                                 />
+                                {isError && (
+                                    isError.target === 'cpf' && (
+                                        <span className='text-sm text-red-500 ml-2'>{isError.message}</span>
+                                    )
+                                )}
                             </div>
                             <div className='flex flex-col gap-2 col-span-2 group'>
                                 <label htmlFor="emailInput" className='group-hover:translate-x-2 transition'>
@@ -128,9 +159,15 @@ const NewCostumer = (props: Props) => {
                                     onBlur={props.handleBlur}
                                     value={props.values.email}
                                     type="email"
+                                    data-error={isError?.target === "email"}
                                     id="emailInput"
-                                    className='outline-none p-2 border border-zinc-400 rounded-lg  focus:border-blue-500'
+                                    className='outline-none p-2 border border-zinc-400 rounded-lg  focus:border-blue-500 data-[error=true]:border-red-500'
                                 />
+                                {isError && (
+                                    isError.target === 'email' && (
+                                        <span className='text-sm text-red-500 ml-2'>{isError.message}</span>
+                                    )
+                                )}
                             </div>
                         </div>
 
@@ -186,10 +223,10 @@ const NewCostumer = (props: Props) => {
                             <button
                                 type="submit"
                                 className="px-4 py-2 bg-blue-500 rounded-xl text-white flex gap-4 font-bold items-center justify-center hover:bg-blue-600 transition">
-                                {props.isSubmitting ? (
-                                    "Saving..."
+                                {isLoading ? (
+                                    <AiOutlineLoading3Quarters size={24} className="text-white animate-spin" />
                                 ) : (
-                                    "Save"
+                                    "Create costumer"
                                 )}
                             </button>
                         </div>
