@@ -34,7 +34,6 @@ const LinkMenu = ({ link }: Props) => {
                         :
                         link.defaultIcon
                     }
-
                     {link.displayName}
                 </div>
 

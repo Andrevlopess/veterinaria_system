@@ -3,7 +3,8 @@ import '../styles/globals.css'
 import type { Metadata } from 'next'
 import { Epilogue } from 'next/font/google'
 import Sidebar from '@/components/Sidebar'
-import QueryProvider from '@/components/QueryProvider'
+import { Suspense } from 'react'
+import Loading from '@/components/Loading'
 
 const epilogue = Epilogue({ subsets: ['latin'] })
 
@@ -21,12 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={epilogue.className}>
-        <QueryProvider>
-          <Sidebar />
+
+        <Sidebar />
+        <Suspense fallback={<Loading />}>
           <div className='ml-[258px] flex flex-1'>
             {children}
           </div>
-        </QueryProvider>
+        </Suspense>
+
+
       </body>
     </html>
   )

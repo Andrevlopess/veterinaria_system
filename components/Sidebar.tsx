@@ -8,7 +8,7 @@ import { AiOutlineDashboard, AiFillDashboard, AiOutlineUser } from 'react-icons/
 import { HiOutlineUsers, HiUsers, HiOutlineCalendar } from 'react-icons/hi'
 import { PiDog, PiDogFill } from 'react-icons/pi'
 import { IoMdCalendar } from 'react-icons/io'
-import {BsPersonPlus} from 'react-icons/bs'
+import { BsPersonPlus } from 'react-icons/bs'
 import Logo from '../public/Logo.svg'
 import clsx from 'clsx'
 import LinkMenu from './LinkMenu'
@@ -39,7 +39,23 @@ const Sidebar = (props: Props) => {
         activeIcon: <AiFillDashboard size={24} className="text-blue-600" />,
         defaultIcon: <AiOutlineDashboard size={24} className="text-zinc-600" />,
         displayName: 'Dashboard',
-        pathname: '/dashboard'
+        pathname: '/dashboard',
+        sublinks: [
+            {
+                id: 1,
+                activeIcon: <AiFillDashboard size={24} className="text-blue-600" />,
+                defaultIcon: <AiOutlineDashboard size={24} className="text-zinc-600" />,
+                displayName: 'Dashboard',
+                pathname: '/dashboard',
+            },
+            {
+                id: 2,
+                defaultIcon: <HiOutlineUsers size={24} className="text-zinc-600" />,
+                activeIcon: <HiUsers size={24} className="text-blue-600" />,
+                displayName: 'Costumers',
+                pathname: '/dashboard/costumers',
+            },
+        ]
     },
     {
         id: 2,
@@ -96,7 +112,7 @@ const Sidebar = (props: Props) => {
                             links.map(link => {
                                 return (
                                     <li key={link.id}>
-                                      <LinkMenu link={link}/>  
+                                        <LinkMenu link={link} />
                                     </li>
                                 )
                             })

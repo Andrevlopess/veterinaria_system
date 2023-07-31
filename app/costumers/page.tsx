@@ -1,28 +1,17 @@
 'use client';
 
 import ConfirmDialog from '@/components/ConfirmDialog';
-import {Toaster, toast} from 'react-hot-toast'
+import { Toaster, toast } from 'react-hot-toast'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { AiOutlinePlus, AiOutlineSearch, AiOutlineLoading3Quarters, AiOutlineEdit } from 'react-icons/ai'
 import { BiTrashAlt } from 'react-icons/bi'
+import { ICostumer } from '@/types/Costumers';
+import EditDialog from '@/components/EditDialog';
+import EditCostumerDialog from '@/components/EditDialog';
 
 
 type Props = {}
-
-interface ICostumer {
-    id: string;
-    name: string,
-    surname: string,
-    phone: string,
-    email: string,
-    cpf: string,
-    address: string,
-    state: string,
-    cep: number;
-    createdAt: Date;
-}
-
 
 
 const Costumers = (props: Props) => {
@@ -31,8 +20,6 @@ const Costumers = (props: Props) => {
     const [searchedCostumers, setSearchedCostumers] = useState<ICostumer[]>([])
     const [searchText, setSearchText] = useState<string>('')
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-
 
     const getCostumers = async () => {
         try {
@@ -68,7 +55,6 @@ const Costumers = (props: Props) => {
         );
     }
 
-
     const formatCreatedAt = (createdAt: Date) => {
         const data = new Date(createdAt);
 
@@ -80,29 +66,14 @@ const Costumers = (props: Props) => {
         return `${dia}/${mes}/${ano}`;
     }
 
-    const handleDeleteCostumer = async (costumer_id: string) => {
-        setIsLoading(true)
+    const handleDeletedCostumer = () => {
+        toast.success("Costumer deleted");
+        getCostumers();
+    }
 
-        try {
-
-            const res = await fetch(`http://localhost:3000/api/costumers/${costumer_id}`, {
-                method: 'DELETE',
-                headers: { 'content-type': 'application/json' }
-            })
-
-            if (res.ok) {
-                setIsLoading(false)
-                getCostumers();
-                toast.success("Costumer deleted successfully")
-            }
-
-        } catch (error) {
-            alert(error)
-        } finally {
-            setIsLoading(false)
-            handleCloseModal(isDialogOpen)
-        }
-
+    const handleEditedCostumer = () => {
+        toast.success("Costumer edited");
+        getCostumers();
     }
 
     useEffect(() => {
@@ -111,17 +82,12 @@ const Costumers = (props: Props) => {
             setSearchedCostumers(handleSearch(searchText))
         }, 500);
 
-    }, [searchText, handleDeleteCostumer])
-
-
-    const handleCloseModal = (isOpen: boolean) => {
-        setIsDialogOpen(!isOpen)
-    }
+    }, [searchText, handleDeletedCostumer])
 
     return (
         <div className='p-4 w-full '>
             <Toaster />
-            <h2 className='text-2xl font-semibold '>Costumers</h2>
+            <h2 className='text-2xl font-semibold'>Costumers</h2>
             <div className='flex flex-col w-full mt-10 gap-2'>
                 <div className='flex justify-between w-full items-center p-2 rounded-full border'>
 
@@ -183,13 +149,14 @@ const Costumers = (props: Props) => {
                             costumers.length ? (
                                 searchText ? (
                                     searchedCostumers.length ? (
-                                        <tbody className='h-[500px] overflow-y-scroll'>
+                                        <tbody className='overflow-y-scroll'>
                                             {
                                                 searchedCostumers.map(searchedCostumer => {
                                                     return (
                                                         <tr
                                                             key={searchedCostumer.id}
                                                             className="bg-white border-b dark:bg-zinc-100 border-zinc-400 hover:bg-blue-100">
+
                                                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex flex-col">
                                                                 <span>{searchedCostumer.name} {searchedCostumer.surname}</span>
                                                                 <span className='text-xs text-gray-700'>{searchedCostumer.email}</span>
@@ -207,25 +174,19 @@ const Costumers = (props: Props) => {
                                                                 {searchedCostumer.state}
                                                             </td>
                                                             <td className="px-6 py-4">
+
                                                                 {formatCreatedAt(searchedCostumer.createdAt)}
                                                             </td>
-                                                            <td className="px-6 py-4 text-center">
-                                                                <ConfirmDialog
-                                                                    onConfirm={() => {
-                                                                        handleDeleteCostumer(searchedCostumer.id)
-                                                                    }}
-                                                                    isLoading={isLoading}
-                                                                    isOpen={isDialogOpen}
-                                                                    onClose={handleCloseModal}
-                                                                />
+                                                            <td className="px-6 py-4 text-center space-x-2">
+                                                                <EditCostumerDialog
+                                                                    onEdited={handleEditedCostumer}
+                                                                    costumer={searchedCostumer} />
 
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setIsDialogOpen(true)}
-                                                                    className="p-2 border border-red-100 rounded-full"
-                                                                >
-                                                                    <BiTrashAlt size={20} className="text-red-500" />
-                                                                </button>
+
+                                                                <ConfirmDialog
+                                                                    onDeleted={handleDeletedCostumer}
+                                                                    costumerId={searchedCostumer.id}
+                                                                    costumerName={searchedCostumer.name + searchedCostumer.surname} />
                                                             </td>
                                                         </tr>
 
@@ -247,7 +208,8 @@ const Costumers = (props: Props) => {
                                             return (
                                                 <tr
                                                     key={costumer.id}
-                                                    className="bg-white border-b dark:bg-zinc-100 border-zinc-400 hover:bg-blue-100">
+                                                    className="bg-white border-b dark:bg-zinc-100 border-zinc-300 hover:bg-blue-100">
+
                                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex flex-col">
                                                         <span>{costumer.name} {costumer.surname}</span>
                                                         <span className='text-xs text-gray-700'>{costumer.email}</span>
@@ -268,22 +230,17 @@ const Costumers = (props: Props) => {
                                                         {formatCreatedAt(costumer.createdAt)}
                                                     </td>
                                                     <td className="px-6 py-4 text-center space-x-2">
-                                                        <ConfirmDialog
-                                                            onConfirm={() => {
-                                                                handleDeleteCostumer(costumer.id)
-                                                            }}
-                                                            isLoading={isLoading}
-                                                            isOpen={isDialogOpen}
-                                                            onClose={handleCloseModal}
-                                                        />
 
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setIsDialogOpen(true)}
-                                                            className="p-2 border border-red-100 rounded-full"
-                                                        >
-                                                            <BiTrashAlt size={20} className="text-red-500" />
-                                                        </button>
+                                                        <EditCostumerDialog
+                                                            onEdited={handleEditedCostumer}
+                                                            costumer={costumer} />
+
+
+                                                        <ConfirmDialog
+                                                            onDeleted={handleDeletedCostumer}
+                                                            costumerId={costumer.id}
+                                                            costumerName={costumer.name + costumer.surname} />
+
                                                     </td>
 
                                                 </tr>

@@ -1,24 +1,67 @@
-import { Fragment, useRef, useState } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
-import { BiTrashAlt } from 'react-icons/bi'
-import {AiOutlineLoading3Quarters} from 'react-icons/ai'
-export default function ConfirmDialog(
-    { onConfirm, isLoading, isOpen, onClose }
-    :
-    {
-      onConfirm: () => void;
-      onClose: (isOpen: boolean) => void;
-      isLoading: boolean;
-      isOpen: boolean;
-      }) {
+'use client';
 
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment, useState, useRef } from 'react'
+import { BiTrashAlt } from 'react-icons/bi';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+
+type Props = {
+  costumerId: string;
+  costumerName:string;
+  onDeleted: () => void;
+}
+
+export default function ConfirmDialog({ costumerId, costumerName, onDeleted }: Props) {
+
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const cancelButtonRef = useRef(null)
 
+  function closeModal() {
+    setIsOpen(false)
+  }
+
+  function openModal() {
+    setIsOpen(true)
+  }
+
+  const handleDeleteCostumer = async (costumer_id: string) => {
+    setIsLoading(true)
+    try {
+
+      const res = await fetch(`http://localhost:3000/api/costumers/${costumer_id}`, {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' }
+      })
+      
+      if (res.ok) {
+        setIsLoading(false)
+        onDeleted();
+        closeModal();
+      }
+
+    } catch (error) {
+      alert(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <>
+
+      <button
+        type="button"
+        onClick={openModal}
+        className="rounded-full border border-red-100 p-2 hover:bg-red-600 group focus:ring focus:ring-red-300 transition hover:shadow"
+      >
+        <BiTrashAlt size={20} className="text-red-600 group-hover:text-white" />
+
+      </button>
+
       <Transition.Root show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={onClose}>
+        <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setIsOpen}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -28,7 +71,7 @@ export default function ConfirmDialog(
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-20 transition-opacity" />
+            <div className="fixed inset-0 bg-black/20 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -46,7 +89,7 @@ export default function ConfirmDialog(
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                        <BiTrashAlt size={20} className="text-red-600" />
+                        <BiTrashAlt className="text-red-500" size={24} />
                       </div>
                       <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                         <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
@@ -54,9 +97,8 @@ export default function ConfirmDialog(
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            Are you sure you want to delete this costumer?
-                            <br />
-                            This action is irreversible!
+                            Are you sure you want to delete {costumerName}? <br/>
+                            This action is irreversible.
                           </p>
                         </div>
                       </div>
@@ -66,14 +108,18 @@ export default function ConfirmDialog(
                     <button
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                      onClick={onConfirm}
+                      onClick={() => handleDeleteCostumer(costumerId)}
                     >
-                      {isLoading ? <AiOutlineLoading3Quarters className="animate-spin text-white" size={20} /> : "Delete"}
+                      {isLoading ? (
+                        <AiOutlineLoading3Quarters className="animate-spin mx-auto text-white" size={22} />
+                      ) : (
+                        "Delete"
+                      )}
                     </button>
                     <button
                       type="button"
-                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 sm:mt-0 sm:w-auto"
-                      onClick={() => onClose(isOpen)}
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => setIsOpen(false)}
                       ref={cancelButtonRef}
                     >
                       Cancel
@@ -88,3 +134,4 @@ export default function ConfirmDialog(
     </>
   )
 }
+

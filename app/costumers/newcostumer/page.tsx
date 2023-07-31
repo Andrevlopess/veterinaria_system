@@ -3,26 +3,11 @@
 import React, { useState } from 'react'
 import { Formik } from 'formik'
 import { Toaster, toast } from 'react-hot-toast';
-import { useMutation } from '@tanstack/react-query';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import { ICostumer, IError } from '@/types/Costumers';
 
 type Props = {}
 
-interface ICostumer {
-    name: string,
-    surname: string,
-    phone: string,
-    email: string,
-    cpf: string,
-    address: string,
-    state: string,
-    cep: number;
-}
-interface IError {
-    status: string,
-    target: string,
-    message: string
-}
 
 const NewCostumer = (props: Props) => {
 
@@ -55,14 +40,15 @@ const NewCostumer = (props: Props) => {
         }
     }
 
-
     return (
         <div className='p-4 w-full '>
             <Toaster />
-            <h2 className='text-2xl font-semibold '>Add costumer</h2>
+            <div>
+<h2 className='text-2xl font-semibold '>Add costumer</h2>
             <p className='text-lg text-zinc-700'>Create and save a new costumer for the veterinary.</p>
             <Formik
                 initialValues={{
+                    id:"",
                     name: "andre ",
                     surname: "v lopes",
                     phone: "(11) 95429-1628",
@@ -71,6 +57,7 @@ const NewCostumer = (props: Props) => {
                     address: "algum lugar",
                     state: "uk",
                     cep: 0,
+                    createdAt: new Date(),
                 }}
                 onSubmit={(values, actions) => {
                     handlePostCostumer(values)
@@ -233,6 +220,8 @@ const NewCostumer = (props: Props) => {
                     </form>
                 )}
             </Formik>
+            </div>
+            
         </div >
     )
 }
