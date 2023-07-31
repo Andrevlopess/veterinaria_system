@@ -12,6 +12,10 @@ import { BsPersonPlus } from 'react-icons/bs'
 import Logo from '../public/Logo.svg'
 import clsx from 'clsx'
 import LinkMenu from './LinkMenu'
+import DogPawOutline from '@/public/icons/DogPawOutline'
+import DogPawFilled from '@/public/icons/DogPawFilled'
+import DoubleDogPaw from '@/public/icons/DoubleDogPaw'
+import PlusDogPawOutline from '@/public/icons/PlusDogPawOutline'
 
 type Props = {}
 
@@ -82,10 +86,26 @@ const Sidebar = (props: Props) => {
     },
     {
         id: 3,
-        defaultIcon: <PiDog size={24} className="text-zinc-600" />,
-        activeIcon: <PiDogFill size={24} className="text-blue-600" />,
+        defaultIcon: <DogPawOutline size={24}/>,
+        activeIcon: <DogPawFilled size={24} />,
         displayName: 'Animals',
-        pathname: '/animals'
+        pathname: '/animals',
+        sublinks: [
+            {
+                id: 1,
+                defaultIcon: <DoubleDogPaw size={24} color={"#52525b"} />,
+                activeIcon: <DoubleDogPaw size={24} color={"#2563eb"}/>,
+                displayName: 'All animals',
+                pathname: '/animals',
+            },
+            {
+                id: 2,
+                defaultIcon: <PlusDogPawOutline size={24} color={"#52525b"} />,
+                activeIcon: <PlusDogPawOutline size={24} color={"#2563eb"} />,
+                displayName: 'Add animal',
+                pathname: '/animals/newanimal',
+            },
+        ]
     },
     {
         id: 4,

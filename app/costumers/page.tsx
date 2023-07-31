@@ -4,7 +4,7 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 import { Toaster, toast } from 'react-hot-toast'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
-import { AiOutlinePlus, AiOutlineSearch, AiOutlineLoading3Quarters, AiOutlineEdit } from 'react-icons/ai'
+import { AiOutlinePlus, AiOutlineSearch, AiOutlineLoading3Quarters, AiOutlineEye } from 'react-icons/ai'
 import { BiTrashAlt } from 'react-icons/bi'
 import { ICostumer } from '@/types/Costumers';
 import EditDialog from '@/components/EditDialog';
@@ -155,7 +155,7 @@ const Costumers = (props: Props) => {
                                                     return (
                                                         <tr
                                                             key={searchedCostumer.id}
-                                                            className="bg-white border-b dark:bg-zinc-100 border-zinc-400 hover:bg-blue-100">
+                                                            className="bg-white border-b dark:bg-zinc-100 border-zinc-400 hover:bg-blue-100 transition ">
 
                                                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex flex-col">
                                                                 <span>{searchedCostumer.name} {searchedCostumer.surname}</span>
@@ -208,7 +208,7 @@ const Costumers = (props: Props) => {
                                             return (
                                                 <tr
                                                     key={costumer.id}
-                                                    className="bg-white border-b dark:bg-zinc-100 border-zinc-300 hover:bg-blue-100">
+                                                    className="bg-white border-b dark:bg-zinc-100 border-zinc-300 hover:bg-blue-100 transition">
 
                                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex flex-col">
                                                         <span>{costumer.name} {costumer.surname}</span>
@@ -240,6 +240,16 @@ const Costumers = (props: Props) => {
                                                             onDeleted={handleDeletedCostumer}
                                                             costumerId={costumer.id}
                                                             costumerName={costumer.name + costumer.surname} />
+
+
+                                                        <button className='p-2 border border-zinc-300 rounded-full hover:bg-blue-600 hover:border-blue-300 transition hover:shadow focus:ring focus:ring-blue-300 group'>
+                                                            <Link
+                                                                href={`costumers/${costumer.id}`}
+                                                            >
+                                                                <AiOutlineEye size={20} className="group-hover:text-white" />
+                                                            </Link>
+                                                        </button>
+
 
                                                     </td>
 

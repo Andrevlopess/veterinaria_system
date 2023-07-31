@@ -99,3 +99,33 @@ export async function PUT(
     );
   }
 }
+
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const id = params.id;
+
+  try {
+    const costumer = await prisma.costumers.findUnique({
+      where: { id: id },
+    });
+
+    if (!costumer) {
+      return NextResponse.json(
+        {
+          status: "Error",
+          message: "Costumer not found.",
+        },
+        { status: 404}
+      );
+    }
+
+    return NextResponse.json({
+      message: "Sucess",
+      costumer: costumer,
+    });
+  } catch (error) {
+    return NextResponse.json(error);
+  }
+}
