@@ -5,6 +5,7 @@ import { ICostumer } from '@/types/Costumers'
 import { MdOutlineMailOutline } from 'react-icons/md'
 import { BiMapPin } from 'react-icons/bi'
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link';
 
 const Costumer = ({ params }: { params: { id: string } }) => {
 
@@ -90,22 +91,16 @@ const Costumer = ({ params }: { params: { id: string } }) => {
                     </h1>
 
                     <div className='grid grid-cols-4'>
-                        <div className='border p-4 gap-4 rounded-lg shadow flex items-start hover:shadow-xl transition-shadow'>
-                            <span className='p-2 rounded-full bg-zinc-200'>
-                                <BiMapPin size={24} /></span>
-
-                            <div className='flex gap-2 flex-col items-start'>
-                                <h3 className='text-xl font-semibold'>Address</h3>
-                                <p className='text-base font-medium'>{costumer.address + " - " + costumer.state}</p>
-                                <p className='text-base font-medium'>{costumer.cep}</p>
+                        <Link href={`/animals/newanimal/${costumer.id}`}>
+                            <div className='border p-4 gap-4 rounded-lg shadow flex items-start hover:shadow-xl transition-shadow'>
+                                New
                             </div>
+                        </Link>
 
-                        </div>
                     </div>
                 </>
 
             )}
-            andre
         </div>
     )
 }

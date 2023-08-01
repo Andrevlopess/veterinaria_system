@@ -116,7 +116,7 @@ const Sidebar = (props: Props) => {
     },]
 
     return (
-        <aside className='min-h-screen fixed inset-y-0 left-0 min-w-[250px] flex border-r border-zinc-200 flex-col p-4 gap-6'>
+        <aside className='min-h-screen fixed inset-y-0 left-0 min-w-[250px] flex border-r border-zinc-200 flex-col p-4 gap-6 bg-white z-50'>
 
             <Image
                 src={Logo}

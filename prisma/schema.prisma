@@ -27,8 +27,8 @@ model Costumers {
 model Animal {
   id         String   @id @default(uuid())
   name       String
-  id_species String
-  id_breed   String
+  specieId   String
+  breedId    String
   age        Int
   gender     String
   weight     Float
@@ -40,7 +40,29 @@ model Animal {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner Costumers @relation(fields: [ownerId], references: [id])
+  owner  Costumers    @relation(fields: [ownerId], references: [id])
+  specie AnimalSpecie @relation(fields: [specieId], references: [id])
+  breed  AnimalBreed  @relation(fields: [breedId], references: [id])
+}
+
+model AnimalSpecie {
+  id     String @id @default(uuid())
+  specie String @unique
+
+  createdAt DateTime @updatedAt
+
+  AnimalBreeds AnimalBreed[]
+  Animal       Animal[]
+}
+
+model AnimalBreed {
+  id       String       @id @default(uuid())
+  breed    String       @unique
+  specieId String
+  specie   AnimalSpecie @relation(fields: [specieId], references: [id])
+
+  createdAt DateTime @default(now())
+  Animal    Animal[]
 }
 
 model Employees {
