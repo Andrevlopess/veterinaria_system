@@ -8,24 +8,39 @@ interface SelectProps {
     name: string;
     label: string;
     options: string[];
+    disabled?: boolean;
+    onChange?: (value: string) => void;
 }
 
 export const SelectInput: React.FC<SelectProps> = ({
     name,
     label,
     options,
+    disabled,
+    onChange,
 }) => {
     const [field] = useField({ name });
+
+    const handleChange = (value: string) => {
+        if (onChange) {
+            onChange(value)
+        }
+         
+        field.onChange({ target: { value, name } });
+
+    }
 
     return (
         <Listbox
             value={field.value}
             onChange={(value: string) => {
-                field.onChange({ target: { value, name } });
+                handleChange(value)
             }}
         >
             <div className="relative mt-1">
-                <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 border border-zinc-400 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+                <Listbox.Button
+                    className={`relative capitalize w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 border border-zinc-400 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 transition focus-visible:ring-offset-orange-300 sm:text-sm ${disabled ? "opacity-50 cursor-not-allowed" : ''}
+                    `}>
                     <span className="block truncate">{field.value ? field.value : label}</span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                         <FiChevronDown
@@ -53,7 +68,7 @@ export const SelectInput: React.FC<SelectProps> = ({
                                 {({ selected }) => (
                                     <>
                                         <span
-                                            className={`block truncate ${selected ? 'font-medium' : 'font-normal'
+                                            className={`block truncate capitalize ${selected ? 'font-medium' : 'font-normal '
                                                 }`}
                                         >
                                             {option}

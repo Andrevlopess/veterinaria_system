@@ -3,21 +3,23 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { specie: string } }
 ) {
-  const specieId = params.id;
+
+  const specie = params.specie;
 
   try {
-    const res = await prisma.animalBreed.findMany({
-      where: {
-        specieId,
-      },
-    });
+    const res = await prisma.animalSpecie.findUnique({
+     where: {
+        specie: specie.toLocaleLowerCase()
+     }
+    }); 
 
     return NextResponse.json({
       status: "success",
       breeds: res,
     });
+
   } catch (error) {
     return NextResponse.json({
       status: "Error",

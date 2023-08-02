@@ -32,7 +32,7 @@ model Animal {
   age        Int
   gender     String
   weight     Float
-  bithdate   DateTime
+  birthdate   DateTime
   neutered   Boolean
   vaccinated Boolean
   ownerId    String

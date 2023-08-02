@@ -20,7 +20,7 @@ const LinkMenu = ({ link }: Props) => {
 
     return (
         <div
-            className={clsx('flex cursor-pointer flex-col justify-center rounded-lg p-2 gap-4 hover:border-blue-500 transition bg-zinc-100 border-2', {
+            className={clsx('flex cursor-pointer flex-col justify-center rounded-lg p-2 gap-4 hover:border-blue-500 transition bg-zinc-100 border-2 ', {
                 'border-l-blue-500 border-2': pathname === link.pathname,
                 'bg-zinc-100': pathname !== link.pathname,
             })}>
@@ -54,7 +54,7 @@ const LinkMenu = ({ link }: Props) => {
                             return (
                                 <Link
                                 key={sublink.id}
-                                    className={clsx('flex gap-2 rounded-lg p-2 ml-4 border hover:border-blue-200', {
+                                    className={clsx('flex gap-2 rounded-lg p-2 ml-4 border hover:border-blue-200 focus:ring focus:ring-blue-400', {
                                         'bg-blue-200': pathname === sublink.pathname,
                                         'bg-zinc-100': pathname !== sublink.pathname,
                                     })}

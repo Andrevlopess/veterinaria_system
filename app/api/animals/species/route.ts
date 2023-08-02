@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const res = await prisma.animalSpecie.findMany();
+    const res = await prisma.animalSpecie.findMany({
+      include:{AnimalBreeds:true}
+    });
 
     return NextResponse.json({
       status: "success",

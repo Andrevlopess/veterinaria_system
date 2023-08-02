@@ -19,11 +19,11 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const [species, setSpecies] = useState<ISpecies[] | []>([])
-  const [breeds, setBreeds] = useState<IBreeds | []>([])
+  const [breeds, setBreeds] = useState<IBreeds[] | []>([])
 
-  const fetchBreeds = async (specieId: string) => {
+  const handleFetchBreeds = async (specie: string) => {
     try {
-      const res = await fetch('http://localhost:3000/api/animals/breeds', {
+      const res = await fetch(`http://localhost:3000/api/animals/species/${specie}/breeds`, {
         method: 'GET',
         headers: { 'content-type': 'application/json' }
       })
@@ -32,9 +32,9 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
         return console.log(res);
       }
 
-      const species = await res.json();
+      const breeds = await res.json();
 
-      setSpecies(species.species)
+      setBreeds(breeds.breeds);
 
     } catch (error) {
       console.log(error);
@@ -66,7 +66,6 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
 
   }, [])
 
-
   return (
     <div className='p-4 w-full '>
       <Toaster />
@@ -84,12 +83,10 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
             neutered: true,
             vaccinated: true,
             specieId: " ",
-            breedId: 0,
+            breedId: " ",
           }}
           onSubmit={(values, actions) => {
             console.log(values);
-
-
           }}>
 
           {props => (
@@ -213,7 +210,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     Specie
                   </label>
 
-                  <SelectInput name="specie" options={species.map(specie => specie.specie)} label="Select the specie" />
+                  <SelectInput name="specie" options={species.map(specie => specie.specie)} label="Select the specie" onChange={(value) => handleFetchBreeds(value)} />
 
                 </div>
 
@@ -222,7 +219,11 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     Breed
                   </label>
 
-                  <SelectInput name="specie" options={species.map(specie => specie.specie)} label="Select the specie" />
+                  <SelectInput
+                    disabled={breeds.length ? false : true}
+                    name="breed"
+                    options={breeds.map(breed => breed.breed)}
+                    label="Select the breed" />
 
                 </div>
               </div>
