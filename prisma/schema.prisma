@@ -25,14 +25,14 @@ model Costumers {
 }
 
 model Animal {
-  id         String   @id @default(uuid())
+  id         String  @id @default(uuid())
+  microchip  Int     @unique
   name       String
   specieId   String
   breedId    String
   age        Int
   gender     String
   weight     Float
-  birthdate   DateTime
   neutered   Boolean
   vaccinated Boolean
   ownerId    String

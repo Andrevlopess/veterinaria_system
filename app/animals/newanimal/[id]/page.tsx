@@ -125,6 +125,30 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     className='outline-none shadow-md p-2 border border-zinc-400 rounded-lg  focus:border-blue-500'
                   />
                 </div>
+
+                <div className='flex flex-col gap-2 group'>
+                  <label htmlFor="weightInput" className='group-hover:translate-x-2 transition'>
+                    Specie
+                  </label>
+
+                  <SelectInput name="specie" options={species.map(specie => specie.specie)} label="Select the specie" onChange={(value) => handleFetchBreeds(value)} />
+
+                </div>
+
+
+                <div className='flex flex-col gap-2 group'>
+                  <label htmlFor="weightInput" className='group-hover:translate-x-2 transition'>
+                    Breed
+                  </label>
+
+                  <SelectInput
+                    disabled={breeds.length ? false : true}
+                    name="breed"
+                    options={breeds.map(breed => breed.breed)}
+                    label="Select the breed" />
+
+                </div>
+
                 <div className='flex flex-col gap-2 group'>
                   <label htmlFor="phoneInput" className='group-hover:translate-x-2 transition'>
                     Gender
@@ -168,7 +192,8 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     )
                   )}
                 </div>
-                <div className='flex gap-2 group'>
+
+                <div className='flex gap-2 group outline-none p-2 shadow-md border border-zinc-400 rounded-lg  focus:border-blue-500 justify-between'>
                   <label htmlFor="weightInput">
                     Neutered
                   </label>
@@ -179,7 +204,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
 
                 </div>
 
-                <div className='flex gap-2 group'>
+                <div className='flex gap-2 group outline-none p-2 shadow-md border border-zinc-400 rounded-lg focus:border-blue-500 justify-between'>
                   <label htmlFor="vaccinatedInput">
                     Vaccinated
                   </label>
@@ -187,43 +212,6 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     name="vaccinated"
                     active={props.values.vaccinated}
                   />
-
-                </div>
-                <div className='flex flex-col gap-2 group'>
-                  <label htmlFor="weightInput" className='group-hover:translate-x-2 transition'>
-                    Weight
-                  </label>
-                  <input
-                    name="weight"
-                    maxLength={11}
-                    onChange={props.handleChange}
-                    onBlur={props.handleBlur}
-                    value={props.values.weight}
-                    type="text"
-                    id="weightInput"
-                    className='outline-none shadow-md p-2 border border-zinc-400 rounded-lg  focus:border-blue-500'
-                  />
-                </div>
-
-                <div className='flex flex-col gap-2 group'>
-                  <label htmlFor="weightInput" className='group-hover:translate-x-2 transition'>
-                    Specie
-                  </label>
-
-                  <SelectInput name="specie" options={species.map(specie => specie.specie)} label="Select the specie" onChange={(value) => handleFetchBreeds(value)} />
-
-                </div>
-
-                <div className='flex flex-col gap-2 group'>
-                  <label htmlFor="weightInput" className='group-hover:translate-x-2 transition'>
-                    Breed
-                  </label>
-
-                  <SelectInput
-                    disabled={breeds.length ? false : true}
-                    name="breed"
-                    options={breeds.map(breed => breed.breed)}
-                    label="Select the breed" />
 
                 </div>
               </div>
@@ -236,7 +224,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                   {isLoading ? (
                     <AiOutlineLoading3Quarters size={24} className="text-white animate-spin" />
                   ) : (
-                    "Create costumer"
+                    "Create animal"
                   )}
                 </button>
               </div>
