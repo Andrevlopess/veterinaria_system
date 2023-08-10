@@ -53,21 +53,6 @@ CREATE TABLE "AnimalBreed" (
     CONSTRAINT "AnimalBreed_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Employees" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "surname" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "phone_number" TEXT NOT NULL,
-    "Adress" TEXT NOT NULL,
-    "State" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Employees_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Costumers_email_key" ON "Costumers"("email");
 
@@ -82,9 +67,6 @@ CREATE UNIQUE INDEX "AnimalSpecie_specie_key" ON "AnimalSpecie"("specie");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "AnimalBreed_breed_key" ON "AnimalBreed"("breed");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Employees_email_key" ON "Employees"("email");
 
 -- AddForeignKey
 ALTER TABLE "Animal" ADD CONSTRAINT "Animal_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Costumers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

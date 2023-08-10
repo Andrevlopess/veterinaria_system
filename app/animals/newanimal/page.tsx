@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Formik } from 'formik'
 import { Toaster, toast } from 'react-hot-toast';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
-import { IError } from '@/types/Costumers';
+import { ICostumer, IError } from '@/types/Costumers';
 import { SelectInput } from '@/components/SelectInput';
 import { SwitchInput } from '@/components/SwitchInput';
 import { getCurrentDate } from '@/utils/CurrentDate';
@@ -20,6 +20,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
 
   const [species, setSpecies] = useState<ISpecies[] | []>([])
   const [breeds, setBreeds] = useState<IBreeds[] | []>([])
+  const [costumers, setCostumers] = useState<ICostumer[] | []>([])
 
   const handleFetchBreeds = async (specie: string) => {
     try {
@@ -61,9 +62,30 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
     }
   }
 
+  const fetchCostumers = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/costumers', {
+        method: 'GET',
+        headers: { 'content-type': 'application/json' }
+      })
+
+      if (!res.ok) {
+        return console.log(res);
+      }
+
+      const costumers = await res.json();
+
+      setCostumers(costumers.costumers)
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     fetchSpecies();
 
+    fetchCostumers();
   }, [])
 
   return (
@@ -82,6 +104,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
             birthdate: getCurrentDate(),
             neutered: true,
             vaccinated: true,
+            ownerId: " ",
             specieId: " ",
             breedId: " ",
           }}
@@ -95,6 +118,17 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
               className='flex flex-col max-w-3xl mt-6'>
               <h3 className='text-md font-bold uppercase text-zinc-800 translate-x-4 translate-y-3 bg-white w-fit px-2'>Animal</h3>
               <div className='grid grid-cols-2 border border-zinc-400 rounded-lg px-2 py-4 gap-2 gap-y-4 focus-within:border-blue-500'>
+                <div className='flex flex-col gap-2 group'>
+                  <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
+                    Owner
+                  </label>
+                  <SelectInput
+                    name="owner"
+                    options={costumers.map(costumer => costumer.id)}
+                    label='Select the owner'
+                  />
+
+                </div>
                 <div className='flex flex-col gap-2 group'>
                   <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
                     Name
