@@ -7,8 +7,8 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { ICostumer, IError } from '@/types/Costumers';
 import { SelectInput } from '@/components/SelectInput';
 import { SwitchInput } from '@/components/SwitchInput';
-import { getCurrentDate } from '@/utils/CurrentDate';
-import { IBreeds, ISpecies } from '@/types/Animals';
+import { IAnimal, IBreeds, ISpecies } from '@/types/Animals';
+import NewSpecieDialog from '@/components/NewDialog';
 
 type Props = {}
 
@@ -20,7 +20,6 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
 
   const [species, setSpecies] = useState<ISpecies[] | []>([])
   const [breeds, setBreeds] = useState<IBreeds[] | []>([])
-  const [costumers, setCostumers] = useState<ICostumer[] | []>([])
 
   const handleFetchBreeds = async (specie: string) => {
     try {
@@ -62,31 +61,91 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
     }
   }
 
-  const fetchCostumers = async () => {
+  const fetchSpecieId = async (specie: string) => {
     try {
-      const res = await fetch('http://localhost:3000/api/costumers', {
+      const res = await fetch(`http://localhost:3000/api/animals/species/id/${specie}`, {
         method: 'GET',
-        headers: { 'content-type': 'application/json' }
-      })
+        headers: { 'content-type': 'application-json' }
+      }).then(data => data.json())
 
-      if (!res.ok) {
-        return console.log(res);
+      if (!res) {
+        alert("Error fetching species")
       }
 
-      const costumers = await res.json();
+      const specieId = res.specie.id
 
-      setCostumers(costumers.costumers)
+      return specieId
 
     } catch (error) {
-      console.log(error);
+      alert(error)
+    }
+  }
+
+  const fetchBreedId = async (specie: string, breed: string) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/animals/species/${specie}/breeds/${breed}`, {
+        method: 'GET',
+        headers: { 'content-type': 'application-json' }
+      }).then(data => data.json())
+
+      if (!res) {
+        alert("Error fetching breeds")
+      }
+
+      const breedId = res.breed.id
+
+      return breedId
+
+    } catch (error) {
+      alert(error)
     }
   }
 
   useEffect(() => {
     fetchSpecies();
-
-    fetchCostumers();
   }, [])
+
+
+  const handleCreateAnimal = async (values: IAnimal) => {
+    try {
+      setIsLoading(true)
+
+      if(!values.specie || !values.breed) return alert("Select the specie and the breed of the animal!")
+
+      const specieId = await fetchSpecieId(values.specie)
+      const breedId = await fetchBreedId(values.specie, values.breed)
+      const ownerId = params.id
+
+      const animal = await fetch('http://localhost:3000/api/animals', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          microchip: values.microchip,
+          name: values.name,
+          ownerId,
+          specieId,
+          breedId,
+          age: values.age,
+          gender: values.gender,
+          weight: values.weight,
+          neutered: values.neutered,
+          vaccinated: values.vaccinated
+        })
+      }).then(res => res.json())
+
+
+      if(animal.status === "error"){
+        return alert(animal.message)
+      }
+
+      toast.success("Animal created successfully!")
+
+    } catch (error) {
+      return console.log(error)
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className='p-4 w-full '>
@@ -97,19 +156,21 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
         <Formik
           initialValues={{
             id: "",
+            microchip: 0,
             name: "andre",
             age: 15,
-            gender: "Male",
+            gender: "male",
             weight: 5.23,
-            birthdate: getCurrentDate(),
             neutered: true,
             vaccinated: true,
-            ownerId: " ",
-            specieId: " ",
-            breedId: " ",
+            specie: "",
+            breed: "",
+            breedId: "",
+            specieId: "",
+            ownerId: "",
           }}
           onSubmit={(values, actions) => {
-            console.log(values);
+            handleCreateAnimal(values)
           }}>
 
           {props => (
@@ -118,18 +179,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
               className='flex flex-col max-w-3xl mt-6'>
               <h3 className='text-md font-bold uppercase text-zinc-800 translate-x-4 translate-y-3 bg-white w-fit px-2'>Animal</h3>
               <div className='grid grid-cols-2 border border-zinc-400 rounded-lg px-2 py-4 gap-2 gap-y-4 focus-within:border-blue-500'>
-                <div className='flex flex-col gap-2 group'>
-                  <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
-                    Owner
-                  </label>
-                  <SelectInput
-                    name="owner"
-                    options={costumers.map(costumer => costumer.id)}
-                    label='Select the owner'
-                  />
-
-                </div>
-                <div className='flex flex-col gap-2 group'>
+                <div className='flex flex-col gap-2 group col-span-2'>
                   <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
                     Name
                   </label>
@@ -141,6 +191,21 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     value={props.values.name}
                     type="text"
                     id="nameInput"
+                    className='outline-none shadow-md p-2 border border-zinc-400 rounded-lg  focus:border-blue-500'
+                  />
+                </div>
+                <div className='flex flex-col gap-2 group'>
+                  <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
+                    Microchip
+                  </label>
+                  <input
+                    required
+                    name="microchip"
+                    onChange={props.handleChange}
+                    onBlur={props.handleBlur}
+                    value={props.values.microchip}
+                    type="number"
+                    id="microchipInput"
                     className='outline-none shadow-md p-2 border border-zinc-400 rounded-lg  focus:border-blue-500'
                   />
                 </div>
@@ -164,8 +229,18 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                   <label htmlFor="weightInput" className='group-hover:translate-x-2 transition'>
                     Specie
                   </label>
+                  <div className='flex gap-2'>
 
-                  <SelectInput name="specie" options={species.map(specie => specie.specie)} label="Select the specie" onChange={(value) => handleFetchBreeds(value)} />
+                    <SelectInput
+                      name="specie"
+                      options={species.map(specie => specie.specie)}
+                      label="Select the specie"
+                      onChange={(value) => handleFetchBreeds(value)} />
+
+
+                    {/* <NewSpecieDialog name="specie" /> */}
+                  </div>
+
 
                 </div>
 
@@ -196,6 +271,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     Weight
                   </label>
                   <input
+                    required
                     name="weight"
                     maxLength={11}
                     onChange={props.handleChange}
@@ -206,27 +282,6 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
                     className='outline-none shadow-md p-2 border border-zinc-400 rounded-lg  focus:border-blue-500'
                   />
                 </div>
-                <div className='flex flex-col gap-2 col-span-2 group'>
-                  <label htmlFor="birthdateInput" className='group-hover:translate-x-2 transition'>
-                    Birthdate
-                  </label>
-                  <input
-                    required
-                    name="birthdate"
-                    onChange={props.handleChange}
-                    onBlur={props.handleBlur}
-                    value={props.values.birthdate}
-                    type="date"
-                    id="birthdateInput"
-                    className='outline-none p-2 shadow-md border border-zinc-400 rounded-lg  focus:border-blue-500'
-                  />
-                  {isError && (
-                    isError.target === 'email' && (
-                      <span className='text-sm text-red-500 ml-2'>{isError.message}</span>
-                    )
-                  )}
-                </div>
-
                 <div className='flex gap-2 group outline-none p-2 shadow-md border border-zinc-400 rounded-lg  focus:border-blue-500 justify-between'>
                   <label htmlFor="weightInput">
                     Neutered

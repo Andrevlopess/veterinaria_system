@@ -1,8 +1,9 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { useField } from "formik";
 import { FiChevronDown } from 'react-icons/fi';
-import { BsCheckLg } from 'react-icons/bs'
+import { BsCheckLg, BsPlusLg } from 'react-icons/bs'
 import { Fragment } from "react";
+import NewSpecieDialog from "./NewDialog";
 
 interface SelectProps {
     name: string;
@@ -20,12 +21,12 @@ export const SelectInput: React.FC<SelectProps> = ({
     onChange,
 }) => {
     const [field] = useField({ name });
-    
+
     const handleChange = (value: string) => {
         if (onChange) {
             onChange(value)
         }
-         
+
         field.onChange({ target: { value, name } });
 
     }
@@ -37,7 +38,7 @@ export const SelectInput: React.FC<SelectProps> = ({
                 handleChange(value)
             }}
         >
-            <div className="relative mt-1">
+            <div className="relative w-full">
                 <Listbox.Button
                     className={`relative capitalize w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 border border-zinc-400 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 transition focus-visible:ring-offset-orange-300 sm:text-sm ${disabled ? "opacity-50 cursor-not-allowed" : ''}
                     `}>
@@ -82,9 +83,10 @@ export const SelectInput: React.FC<SelectProps> = ({
                                 )}
                             </Listbox.Option>
                         ))}
+
                     </Listbox.Options>
                 </Transition>
             </div>
-        </Listbox>
+        </Listbox >
     );
 };

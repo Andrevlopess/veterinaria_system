@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const res = await prisma.animalSpecie.findMany({
-      include:{AnimalBreeds:true}
+      include:{ AnimalBreeds: true}
     });
 
     return NextResponse.json({
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
     if (hasSpecie) {
       return NextResponse.json({
-        status: "Error",
+        status: "error",
         message: "This specie already exists.",
       });
     }

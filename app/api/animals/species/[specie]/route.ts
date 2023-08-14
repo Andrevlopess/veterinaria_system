@@ -5,25 +5,30 @@ export async function GET(
   req: Request,
   { params }: { params: { specie: string } }
 ) {
-
-  const specie = params.specie;
-
   try {
-    const res = await prisma.animalSpecie.findUnique({
-     where: {
-        specie: specie.toLocaleLowerCase()
-     }
-    }); 
+    const specie = params.specie;
+
+    const specieId = await prisma.animalSpecie.findUnique({
+      where: {
+        specie: specie.toLocaleLowerCase(),
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!specieId) return;
+
+    const animals = await prisma.animal.findMany({
+      where: { specieId: specieId.id},
+    });
 
     return NextResponse.json({
       status: "success",
-      breeds: res,
+      animals: animals,
     });
 
   } catch (error) {
-    return NextResponse.json({
-      status: "Error",
-      message: error,
-    });
+    return NextResponse.json({ error });
   }
 }
