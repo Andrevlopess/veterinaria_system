@@ -23,5 +23,5 @@ export interface IAnimal {
   vaccinated: boolean;
   breed: string;
   specie: string;
-  owner?: string;
+  owner: string;
 }

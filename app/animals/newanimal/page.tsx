@@ -12,14 +12,36 @@ import NewSpecieDialog from '@/components/NewDialog';
 
 type Props = {}
 
+const handleFetchCostumers = async () => {
+  try {
 
-const NewAnimal = ({ params }: { params: { id: string } }) => {
+    const res = await fetch('http://localhost:3000/api/costumers', {
+      method: 'GET',
+      headers: { 'content-type': 'application/json' },
+    })
+
+    if (!res.ok) {
+      throw new Error("Error on fetching costumers")
+    }
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const NewAnimal = () => {
 
   const [isError, setIsError] = useState<IError | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const [species, setSpecies] = useState<ISpecies[] | []>([])
   const [breeds, setBreeds] = useState<IBreeds[] | []>([])
+  const [costumers, setCostumers] = useState<ICostumer[] | []>([])
+
+
+  const handleSetCostumers = async () => { setCostumers(await handleFetchCostumers()) }
 
   const handleFetchBreeds = async (specie: string) => {
     try {
@@ -103,6 +125,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     fetchSpecies();
+    handleSetCostumers();
   }, [])
 
 
@@ -110,11 +133,10 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
     try {
       setIsLoading(true)
 
-      if(!values.specie || !values.breed) return alert("Select the specie and the breed of the animal!")
+      if (!values.specie || !values.breed) return alert("Select the specie and the breed of the animal!")
 
       const specieId = await fetchSpecieId(values.specie)
       const breedId = await fetchBreedId(values.specie, values.breed)
-      const ownerId = params.id
 
       const animal = await fetch('http://localhost:3000/api/animals', {
         method: 'POST',
@@ -122,7 +144,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
         body: JSON.stringify({
           microchip: values.microchip,
           name: values.name,
-          ownerId,
+          // ownerId,
           specieId,
           breedId,
           age: values.age,
@@ -134,7 +156,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
       }).then(res => res.json())
 
 
-      if(animal.status === "error"){
+      if (animal.status === "error") {
         return alert(animal.message)
       }
 
@@ -151,7 +173,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
     <div className='p-4 w-full '>
       <Toaster />
       <div>
-        <h2 className='text-2xl font-semibold '>Add animal to {params.id}</h2>
+        <h2 className='text-2xl font-semibold '>Add animal</h2>
         <p className='text-lg text-zinc-700'>Create and save a new animal for the veterinary.</p>
         <Formik
           initialValues={{
@@ -168,6 +190,7 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
             breedId: "",
             specieId: "",
             ownerId: "",
+            owner: "",
           }}
           onSubmit={(values, actions) => {
             handleCreateAnimal(values)
@@ -176,9 +199,21 @@ const NewAnimal = ({ params }: { params: { id: string } }) => {
           {props => (
             <form
               onSubmit={props.handleSubmit}
-              className='flex flex-col max-w-3xl mt-6'>
+              className='flex flex-col max-w-3xl mt-4'>
               <h3 className='text-md font-bold uppercase text-zinc-800 translate-x-4 translate-y-3 bg-white w-fit px-2'>Animal</h3>
               <div className='grid grid-cols-2 border border-zinc-400 rounded-lg px-2 py-4 gap-2 gap-y-4 focus-within:border-blue-500'>
+                <div className='flex flex-col gap-2 group col-span-2'>
+                  <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
+                    Owner
+                  </label>
+
+                  <SelectInput
+                    disabled={costumers.length ? false : true}
+                    name="owner"
+                    options={["é", "nada"]}
+                    label="Select the owner" />
+
+                </div>
                 <div className='flex flex-col gap-2 group col-span-2'>
                   <label htmlFor="nameInput" className='group-hover:translate-x-2 transition'>
                     Name
