@@ -81,3 +81,45 @@ export async function POST(req: Request) {
     );
   }
 }
+
+
+export async function GET(req: Request){
+  try {
+    const res = await prisma.animal.findMany({
+     include: {
+      breed: {
+        select: {
+          breed: true
+        }
+      },
+      specie:  {
+        select: {
+          specie: true
+        }
+      },
+      owner:  {
+        select: {
+          name: true
+        }
+      },
+     }
+    })
+
+    const animals = res.map(animal => ({
+      ...animal,
+      breed: animal.breed?.breed || '', 
+      specie: animal.specie?.specie || '',
+      owner: animal.owner?.name || ''
+    }));
+
+    if(!animals) return NextResponse.json("No animals found")
+
+    return NextResponse.json({
+      status: "success",
+      animals: animals
+    })
+
+  } catch (error) {
+    return NextResponse.json(error)
+  }
+}
